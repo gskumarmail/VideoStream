@@ -1,0 +1,29 @@
+:root {
+  --scb-primary: #0072CE;
+  --scb-accent: #78BE20;
+  --scb-text: #4D4D4D;
+  --scb-bg: #F4F4F4;
+  --scb-white: #FFFFFF;
+  --scb-font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background-color: var(--scb-bg);
+  font-family: var(--scb-font);
+  color: var(--scb-text);
+}
+
+.ant-layout-header {
+  background-color: var(--scb-primary) !important;
+  color: var(--scb-white);
+}
+
+.ant-menu-item-selected {
+  background-color: var(--scb-accent) !important;
+  color: white !important;
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
