@@ -1,5 +1,5 @@
 const express = require("express");
-// const multer = require("multer");
+const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
@@ -7,7 +7,95 @@ const router = express.Router();
 
 const baseDir = path.join(__dirname, "uploads");
 
-// const upload = multer({ storage });
+
+// Multer config to upload and overwrite existing file
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const category = req.params.category;
+    const dir = path.join(__dirname, "uploads", category);
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.params.filename); // Keep same filename
+  },
+});
+
+const upload = multer({ storage });
+
+/*router.put("/edit/:category/:filename", upload.single("file"), (req, res) => {
+  const { category, filename } = req.params;
+  const { title, description } = req.body;
+
+  const folderPath = path.join(__dirname, "uploads", category);
+  console.log(folderPath);
+  /*const metaPath = path.join(folderPath, "metadata.json");
+
+  // Ensure folder and metadata.json exist
+  if (!fs.existsSync(metaPath)) {
+    return res.status(404).json({ error: "Metadata not found" });
+  }
+
+  let metadata = JSON.parse(fs.readFileSync(metaPath));
+
+  const index = metadata.findIndex((v) => v.filename === filename);
+  if (index === -1) {
+    return res.status(404).json({ error: "Video not found in metadata" });
+  }
+
+  metadata[index].title = title;
+  metadata[index].description = description;
+  metadata[index].updatedAt = new Date().toISOString();
+
+  fs.writeFileSync(metaPath, JSON.stringify(metadata, null, 2));*/
+
+  /*return res.json({ message: "Video updated successfully" });
+}); */
+
+router.put("/edit/:category/:filename", upload.single("file"), (req, res) => {
+  const { category, filename } = req.params;
+  const { title, description } = req.body;
+
+  const folderPath = path.join(__dirname, "uploads", category);
+  const metaPath = path.join(baseDir, "metadata.json");
+  console.log("File uploaded:", req.file);
+  let metadata = [];
+
+  if (fs.existsSync(metaPath)) {
+    try {
+      metadata = JSON.parse(fs.readFileSync(metaPath));
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to read metadata" });
+    }
+  }
+
+  const index = metadata.findIndex((v) => v.filename === filename);
+
+  if (index !== -1) {
+    metadata[index].title = title;
+    metadata[index].description = description;
+    metadata[index].updatedAt = new Date().toISOString();
+  } else {
+    // Create new metadata if not exists
+    metadata.push({
+      filename,
+      title,
+      description,
+      category,
+      uploadedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      views: 0,
+    });
+  }
+
+  try {
+    fs.writeFileSync(metaPath, JSON.stringify(metadata, null, 2));
+    return res.json({ message: "Video updated successfully" });
+  } catch (err) {
+    console.error("Failed to write metadata:", err);
+    return res.status(500).json({ error: "Failed to save metadata" });
+  }
+});
+
 
 /*const getVideosFromFolder = (folderName) => {
   const folderPath = path.join(baseDir, folderName);
@@ -66,6 +154,12 @@ router.get("/stream/:category/:id", (req, res) => {
   const fileSize = stat.size;
   const range = req.headers.range;
 
+  // Add Cache-Control headers
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+
   if (range) {
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
@@ -96,6 +190,12 @@ router.get("/stream/:category/:id", (req, res) => {
 
 router.get("/all", (req, res) => {
   try {
+      // Add Cache-Control headers
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+  
     const cashVideos = getVideosFromFolder("cash");
     const tradeVideos = getVideosFromFolder("trade");
     const fxVideos = getVideosFromFolder("fx");
@@ -110,5 +210,15 @@ router.get("/all", (req, res) => {
     res.status(500).json({ error: "Failed to fetch videos" });
   }
 });
+
+/*router.put('/videos/:filename', upload.single('file'), (req, res) => {
+  const filename = req.params.filename;
+  const { title, description } = req.body;
+  const videoPath = path.join(__dirname, '../uploads/{category}', filename); // derive folder
+
+  // update metadata file if you use a JSON/DB store
+  // optionally replace file if req.file is present
+});
+*/
 
 module.exports = router;

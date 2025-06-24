@@ -16,7 +16,7 @@ const VideoPreviewModal = ({ video, onClose }) => {
       width={720}
     >
       <video width="100%" controls>
-        <source src={video.url} type="video/mp4" />
+        <source src={`${video.url}?t=${Date.now()}`} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <div style={{ marginTop: 16 }}>

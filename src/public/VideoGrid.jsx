@@ -59,7 +59,7 @@ const VideoGrid = ({ videos, category, isLoading = false }) => {
                     muted
                     style={{ objectFit: "cover" }}
                   >
-                    <source src={video.url} type="video/mp4" />
+                    <source src={`${video.url}?t=${Date.now()}`} type="video/mp4" />
                   </video>
                   <div
                     style={{
@@ -151,7 +151,7 @@ const VideoGrid = ({ videos, category, isLoading = false }) => {
       autoPlay
       style={{ borderRadius: 8, marginBottom: 16 }}
     >
-      <source src={previewVideo.url} type="video/mp4" />
+      <source src={`${previewVideo.url}?t=${Date.now()}`} type="video/mp4" />
     </video>
 
     <Paragraph>{previewVideo.description}</Paragraph>

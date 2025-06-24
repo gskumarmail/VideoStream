@@ -141,20 +141,41 @@ app.delete("/delete/:category/:filename", (req, res) => {
 });
 
 // Edit video title (rename file)
-app.put("/edit/:category/:filename", express.json(), (req, res) => {
+/*app.put("/edit/:category/:filename", upload.single("file"), (req, res) => {
   const { category, filename } = req.params;
-  const { title } = req.body;
+  const { title, description } = req.body;
 
-  const oldPath = path.join(__dirname, "uploads", category, filename);
-  const ext = path.extname(filename);
-  const newFilename = `${Date.now()}-${title}${ext}`;
-  const newPath = path.join(__dirname, "uploads", category, newFilename);
+  const folderPath = path.join(__dirname, "uploads", category);
+  const videoPath = path.join(folderPath, filename); // full path to video file
 
-  fs.rename(oldPath, newPath, (err) => {
-    if (err) return res.status(500).json({ error: "Rename failed" });
-    res.json({ newFilename });
-  });
-});
+  // Example logic to handle file or metadata update
+  try {
+    // Update metadata.json (assuming one per folder)
+    const metaPath = path.join(folderPath, "metadata.json");
+
+    let metadata = [];
+    if (fs.existsSync(metaPath)) {
+      metadata = JSON.parse(fs.readFileSync(metaPath));
+    }
+
+    const index = metadata.findIndex((v) => v.filename === filename);
+    if (index === -1) {
+      return res.status(404).json({ error: "Video not found in metadata" });
+    }
+
+    metadata[index].title = title;
+    metadata[index].description = description;
+    metadata[index].updatedAt = new Date().toISOString();
+
+    fs.writeFileSync(metaPath, JSON.stringify(metadata, null, 2));
+
+    return res.json({ message: "Video updated successfully" });
+  } catch (error) {
+    console.error("Edit error:", error);
+    res.status(500).json({ error: "Failed to update video" });
+  }
+});*/
+
 
 const getVideoFromFolder = (folderName) => {
   const folderPath = path.join(__dirname, "uploads", folderName);

@@ -1,11 +1,11 @@
 // src/components/VideoTable.jsx
 import React, { useEffect, useState } from "react";
-import { Table, Button, Popconfirm, message, Modal, Form, Input, Row, Col, Tooltip, Space } from "antd";
+import { Table, Button, Popconfirm, message, Modal, Form, Input, Row, Col, Tooltip, Space, Upload } from "antd";
 import axios from "axios";
 import VideoPreviewModal from "./VideoPreviewModal";
 import UploadForm from "./UploadForm";
 
-import { CopyOutlined, EditOutlined, DeleteOutlined, LinkOutlined, EyeOutlined } from "@ant-design/icons";
+import { CopyOutlined, EditOutlined, DeleteOutlined, LinkOutlined, EyeOutlined, UploadOutlined } from "@ant-design/icons";
 
 const VideoTable = ({ category, refreshTrigger }) => {
   const [videos, setVideos] = useState([]);
@@ -14,12 +14,17 @@ const VideoTable = ({ category, refreshTrigger }) => {
   const [editForm] = Form.useForm();
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadRefreshKey, setUploadRefreshKey] = useState(0);
+  const [updateRefreshKey, setUpdateRefreshKey] = useState(0);
   const [copiedVideoId, setCopiedVideoId] = useState(null);
+  const [file, setFile] = useState(null);
 
   const fetchVideos = async () => {
+    console.log("Fetchingvideos...");
     try {
       const res = await axios.get(`http://localhost:5000/videos/${category}`);
+      console.log("Fetching videos...", res.data);
       setVideos(res.data);
+      // setVideos([...res.data]); 
     } catch (err) {
       message.error("Failed to fetch videos");
     }
@@ -40,21 +45,39 @@ const VideoTable = ({ category, refreshTrigger }) => {
     editForm.setFieldsValue({ title: record.title });
   };
 
-  const saveEdit = async () => {
-    try {
-      await axios.put(`http://localhost:5000/edit/${category}/${editingVideo.filename}`, {
-        title: editForm.getFieldValue("title"),
-      });
-      message.success("Video title updated");
-      setEditingVideo(null);
-      fetchVideos();
-    } catch {
-      message.error("Update failed");
+ const saveEdit = async (values) => {
+
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("description", values.description);
+    console.log('filename', file);
+    if (file) {
+        formData.append("file", file);
     }
-  };
+
+  try {
+    const res = await axios.put(
+      `http://localhost:5000/api/videos/edit/${category}/${editingVideo.filename}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    message.success("Video updated successfully");
+    setEditingVideo(null);
+    setUpdateRefreshKey((prev) => prev + 1); // trigger reload
+  } catch (err) {
+    console.error("Edit failed", err);
+    message.error("Failed to update video");
+  }
+};
+
 
   const handleCopy = (video) => {
-    const streamUrl = `http://localhost:5000/api/videos/stream/${video.category}/${video.filename}`;
+    const streamUrl = `http://localhost:5000/api/videos/stream/${video.category}/${video.filename}?t=${Date.now()}`;
     navigator.clipboard.writeText(streamUrl)
       .then(() => {
         setCopiedVideoId(video.filename);
@@ -68,7 +91,7 @@ const VideoTable = ({ category, refreshTrigger }) => {
 
   useEffect(() => {
     fetchVideos();
-  }, [category, refreshTrigger, uploadRefreshKey]);
+  }, [category, refreshTrigger, updateRefreshKey]);
 
   const columns = [
     {
@@ -100,7 +123,7 @@ const VideoTable = ({ category, refreshTrigger }) => {
             }}
             onClick={() => setPreviewVideo(record)}
         >
-            <source src={url} type="video/mp4" />
+            <source src={`${url}?t=${Date.now()}`} type="video/mp4" />
         </video>
          <div
             style={{
@@ -141,7 +164,7 @@ const VideoTable = ({ category, refreshTrigger }) => {
       title: "Actions",
       key: "actions",
       render: (_, record) => {
-        const streamUrl = `http://localhost:5000/api/videos/stream/${record.category}/${record.filename}`;
+        const streamUrl = `http://localhost:5000/api/videos/stream/${record.category}/${record.filename}?t=${Date.now()}`;
         return (<Space>
         
           <Button
@@ -190,19 +213,49 @@ const VideoTable = ({ category, refreshTrigger }) => {
         </Col>
       </Row>
 
-      <Table rowKey="filename" dataSource={videos} columns={columns} pagination={{ pageSize: 5 }} />
-
+      <Table key={updateRefreshKey} rowKey="filename" dataSource={videos} columns={columns} pagination={{ pageSize: 5 }} />
+{/* Edit Video Form */}
       <Modal
-        title="Edit Video Title"
-        open={!!editingVideo}
-        onOk={saveEdit}
-        onCancel={() => setEditingVideo(null)}
-        okText="Save"
-      >
-        <Form form={editForm} layout="vertical">
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}> <Input /> </Form.Item>
-        </Form>
-      </Modal>
+  title="Edit Video"
+  open={!!editingVideo}
+  onOk={editForm.submit}
+  onCancel={() => setEditingVideo(null)}
+  okText="Save"
+>
+  <Form
+    form={editForm}
+    layout="vertical"
+    initialValues={{
+      title: editingVideo?.title,
+      description: editingVideo?.description,
+    }}
+    onFinish={(values) => saveEdit(values)}
+    encType="multipart/form-data"
+  >
+    <Form.Item
+      name="title"
+      label="Title"
+      rules={[{ required: true, message: "Title is required" }]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      name="description"
+      label="Description"
+      rules={[{ required: true, message: "Description is required" }]}
+    >
+      <Input.TextArea rows={3} />
+    </Form.Item>
+
+    <Form.Item name="file" label="Replace Video (optional)">
+      <Upload beforeUpload={(file) => { setFile(file); return false; }} maxCount={1}>
+        <Button icon={<UploadOutlined />}>Select Video</Button>
+      </Upload>
+    </Form.Item>
+  </Form>
+</Modal>
+
 
       {previewVideo && (
         <VideoPreviewModal

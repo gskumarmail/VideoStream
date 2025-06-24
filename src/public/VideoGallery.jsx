@@ -46,7 +46,7 @@ const VideoGallery = () => {
               style={{ borderRadius: 8 }}
             >
               <source
-                src={`http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}`}
+                src={`http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}?t=${Date.now()}`}
                 type="video/mp4"
               />
             </video>
@@ -89,7 +89,7 @@ const VideoGallery = () => {
     <Button
       icon={<CopyOutlined />}
       onClick={() => {
-        const url = `http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}`;
+        const url = `http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}?t=${Date.now()}`;
         navigator.clipboard.writeText(url);
         message.success("Copied video URL to clipboard");
       }}
@@ -103,7 +103,7 @@ const VideoGallery = () => {
     <Button
       icon={<LinkOutlined />}
       onClick={() => {
-        const url = `http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}`;
+        const url = `http://localhost:5000/api/videos/stream/${currentVideo.category}/${currentVideo.filename}?t=${Date.now()}`;
         window.open(url, "_blank");
       }}
       type="default"
@@ -140,7 +140,7 @@ const VideoGallery = () => {
                 avatar={
                   <video width={64} height={48} muted>
                     <source
-                      src={`http://localhost:5000/api/videos/stream/${video.category}/${video.filename}`}
+                      src={`http://localhost:5000/api/videos/stream/${video.category}/${video.filename}?t=${Date.now()}`}
                       type="video/mp4"
                     />
                   </video>
