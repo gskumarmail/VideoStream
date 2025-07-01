@@ -110,7 +110,7 @@ const PublicLayout = () => {
           </Content>
 
           <Footer style={{ textAlign: "center" }}>
-            © 2025 Standard Chartered Bank Video Portal
+            © 2025 Video Stream Portal
           </Footer>
         </Layout>
       </Layout>
