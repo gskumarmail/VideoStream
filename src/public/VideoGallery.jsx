@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Row, Col, List, Typography, Card, Tooltip, message, Button } from "antd";
 import { CopyOutlined, LinkOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import VideoComments from "./VideoComments";
 
 const { Title } = Typography;
 
@@ -115,6 +116,7 @@ const VideoGallery = () => {
 
           </Card>
         )}
+        <VideoComments videoId={currentVideo?.filename} />
       </Col>
 
       {/* Right column: Main video */}

@@ -195,7 +195,7 @@ router.get("/all", (req, res) => {
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
   res.setHeader("Surrogate-Control", "no-store");
-  
+
     const cashVideos = getVideosFromFolder("cash");
     const tradeVideos = getVideosFromFolder("trade");
     const fxVideos = getVideosFromFolder("fx");
@@ -209,6 +209,40 @@ router.get("/all", (req, res) => {
     console.error("Error fetching all videos:", error);
     res.status(500).json({ error: "Failed to fetch videos" });
   }
+});
+
+router.get("/report", (req, res) => {
+return res.json([
+        {
+            "category": "cash",
+            "totalVideos": 10,
+            "totalLikes": 35,
+            "totalViews": 500,
+            "totalComments": 12
+        },
+        {
+            "category": "trade",
+            "totalVideos": 8,
+            "totalLikes": 20,
+            "totalViews": 300,
+            "totalComments": 7
+        },
+         {
+            "category": "fx",
+            "totalVideos": 3,
+            "totalLikes": 20,
+            "totalViews": 400,
+            "totalComments": 25
+        },
+         {
+            "category": "All Status",
+            "totalVideos": 3,
+            "totalLikes": 20,
+            "totalViews": 400,
+            "totalComments": 25
+        }
+    ]
+);
 });
 
 /*router.put('/videos/:filename', upload.single('file'), (req, res) => {

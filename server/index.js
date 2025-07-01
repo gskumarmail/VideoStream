@@ -5,13 +5,26 @@ const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const videoRoutes = require("./videoRoutes");
+const userRoutes = require("./userRoutes");
+const loginRoutes = require("./login");
+const softwareRoutes = require("./softwareRoutes");
+const commentsRoutes = require("./commentsRoutes");
+
+
 
 
 
 const app = express();
 app.use(cors());
 
+app.use(express.json());
+
 app.use("/api/videos", videoRoutes);
+app.use("/api", softwareRoutes);
+app.use("/api", commentsRoutes);
+
+app.use(userRoutes);
+app.use(loginRoutes);
 
 // Create upload folder if not exists
 ["cash", "trade", "fx"].forEach((folder) => {
@@ -85,47 +98,6 @@ app.get("/videos/:category", (req, res) => {
 });
 
 
-/*app.get("/videos/:category/:id", (req, res) => {
-  const { category, id } = req.params;
-  const filePath = path.join(__dirname, "uploads", category, id);
-
-  // Validate file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send("Video not found");
-  }
-
-  const stat = fs.statSync(filePath);
-  const fileSize = stat.size;
-  const range = req.headers.range;
-
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunkSize = end - start + 1;
-
-    const file = fs.createReadStream(filePath, { start, end });
-    const head = {
-      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunkSize,
-      "Content-Type": "video/mp4",
-    };
-
-    res.writeHead(206, head);
-    file.pipe(res);
-  } else {
-    const head = {
-      "Content-Length": fileSize,
-      "Content-Type": "video/mp4",
-    };
-
-    res.writeHead(200, head);
-    fs.createReadStream(filePath).pipe(res);
-  }
-});*/
-
-
 // Serve static videos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -139,42 +111,6 @@ app.delete("/delete/:category/:filename", (req, res) => {
     res.sendStatus(200);
   });
 });
-
-// Edit video title (rename file)
-/*app.put("/edit/:category/:filename", upload.single("file"), (req, res) => {
-  const { category, filename } = req.params;
-  const { title, description } = req.body;
-
-  const folderPath = path.join(__dirname, "uploads", category);
-  const videoPath = path.join(folderPath, filename); // full path to video file
-
-  // Example logic to handle file or metadata update
-  try {
-    // Update metadata.json (assuming one per folder)
-    const metaPath = path.join(folderPath, "metadata.json");
-
-    let metadata = [];
-    if (fs.existsSync(metaPath)) {
-      metadata = JSON.parse(fs.readFileSync(metaPath));
-    }
-
-    const index = metadata.findIndex((v) => v.filename === filename);
-    if (index === -1) {
-      return res.status(404).json({ error: "Video not found in metadata" });
-    }
-
-    metadata[index].title = title;
-    metadata[index].description = description;
-    metadata[index].updatedAt = new Date().toISOString();
-
-    fs.writeFileSync(metaPath, JSON.stringify(metadata, null, 2));
-
-    return res.json({ message: "Video updated successfully" });
-  } catch (error) {
-    console.error("Edit error:", error);
-    res.status(500).json({ error: "Failed to update video" });
-  }
-});*/
 
 
 const getVideoFromFolder = (folderName) => {
@@ -195,6 +131,10 @@ const getVideoFromFolder = (folderName) => {
     likes: Math.floor(Math.random() * 100),  // optional placeholder
   })).sort((a, b) => b.uploadedAt - a.uploadedAt); // Sort by latest*/
 };
+
+/* USER management */
+
+
 
 
 const PORT = 5000;

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1751312808971",
+    "fileName": "App Installer",
+    "fileDesc": "Installer for the main app 2025",
+    "fileSize": "50MB",
+    "fileVersion": "1.0.0",
+    "downloadURL": "https://example.com/download/app"
+  },
+  {
+    "id": "1751313228491",
+    "fileName": "compliance_cert_2025.pdf",
+    "fileDesc": "2025 Compliance Certificates",
+    "fileSize": "980 KB",
+    "fileVersion": "v2.0",
+    "downloadURL": "https://example.com/files/compliance_cert_2025.pdf"
+  }
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "username": "superadmin",
+    "email": "superadmin@example.com",
+    "password": "super123",
+    "role": "superadmin",
+    "status": "active"
+  },
+  {
+    "username": "test",
+    "email": "arivuselvi.posnic@gmail.com",
+    "password": "1234",
+    "role": "admin",
+    "status": "active"
+  },
+  {
+    "username": "admin123",
+    "email": "admin@gmail.com",
+    "password": "12345",
+    "role": "admin"
+  },
+  {
+    "username": "user123",
+    "email": "123@gmail.com",
+    "password": "12345",
+    "role": "admin"
+  },
+  {
+    "username": "Super123",
+    "email": "super@yahoo.com",
+    "password": "12345",
+    "role": "admin"
+  },
+  {
+    "username": "SupAdmin",
+    "email": "sup@test.com",
+    "password": "12345",
+    "role": "admin",
+    "status": "active"
+  },
+  {
+    "username": "Tetet",
+    "email": "sfsdf@gmail.com",
+    "password": "1234",
+    "role": "superadmin",
+    "status": "active"
+  }
+]

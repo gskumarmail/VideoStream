@@ -1,7 +1,7 @@
 // src/components/MainLayout.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, Dropdown, Avatar } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
 import {
   VideoCameraOutlined,
   DollarOutlined,
@@ -11,21 +11,37 @@ import {
   SettingOutlined,
   DashboardOutlined,
   GlobalOutlined,
+  BarChartOutlined,
+  AppstoreOutlined
 } from "@ant-design/icons";
 
 const { Header, Sider, Content, Footer } = Layout;
+
+// const storedUser = JSON.parse(localStorage.getItem("user"));
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedKey = location.pathname.split("/").pop();
+  const [user, setUser] = useState([]);
 
   const handleMenuClick = ({ key }) => {
     if (key === "logout") {
-      localStorage.removeItem("auth");
+      localStorage.removeItem("user");
+      setUser(null);
       navigate("/login");
     }
   };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+        const parsedUser = JSON.parse(saved);
+        setUser(parsedUser);
+        console.log(parsedUser.role);
+    }
+}, []);
+
 
 
   const SettingsMenu = (
@@ -63,7 +79,21 @@ const MainLayout = () => {
           <Menu.Item key="fx" icon={<VideoCameraOutlined />}>
             FX
           </Menu.Item>
-        </Menu>
+           { user?.role === 'superadmin' && 
+            (
+            <Menu.Item key="user-management" icon={<UserOutlined />}>
+                <Link to="/app/user-management">User Management</Link>
+            </Menu.Item>
+            )}
+          <Menu.Item key="report" icon={<BarChartOutlined />}>
+            <Link to="/app/report">Report</Link>
+         </Menu.Item>
+        <Menu.Item key="software-centre" icon={<AppstoreOutlined />}>
+            <Link to="/app/software-centre">Software Centre</Link>
+         </Menu.Item>
+         </Menu>
+       
+
       </Sider>
       <Layout>
         <Header

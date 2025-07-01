@@ -8,7 +8,8 @@ import {
   VideoCameraOutlined,
   HomeOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  AppstoreOutlined
 } from "@ant-design/icons";
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -97,6 +98,9 @@ const PublicLayout = () => {
             <Menu.Item key="fx" icon={<VideoCameraOutlined />}>
               <Link to="/fx">FX</Link>
             </Menu.Item>
+            <Menu.Item key="downloads" icon={<AppstoreOutlined />}>
+                <Link to="/downloads">Software</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
 
@@ -106,7 +110,7 @@ const PublicLayout = () => {
           </Content>
 
           <Footer style={{ textAlign: "center" }}>
-            © 2025 Public Video Portal
+            © 2025 Standard Chartered Bank Video Portal
           </Footer>
         </Layout>
       </Layout>

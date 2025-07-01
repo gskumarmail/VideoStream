@@ -7,6 +7,7 @@ import Trade from "../public/Trade";
 import Fx from "../public/Fx";
 import Home from "../public/Home";
 import VideoGallery from "../public/VideoGallery";
+import SoftwareDownloadCentre from "../public/SoftwareDownloadCentre";
 
 
 export const publicRoutes = [
@@ -20,6 +21,7 @@ export const publicRoutes = [
       { path: "trade", element: <Trade /> },
       { path: "fx", element: <Fx /> },
       { path: "/videos/:category", element: <VideoGallery /> },
+      { path: "downloads", element: <SoftwareDownloadCentre /> },
 
     ],
   },
